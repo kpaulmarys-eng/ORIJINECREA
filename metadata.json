@@ -1,0 +1,8 @@
+{
+  "name": "Remix NEÏROUA",
+  "description": "NEÏROUA — Ose redéfinir les codes. Une présence à porter. Née en Côte d\u0027Ivoire, patrimoine collectif. Collection exclusive et expériences immersives.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
