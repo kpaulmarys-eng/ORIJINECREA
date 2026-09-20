@@ -14,12 +14,16 @@ import {
 import { BlurUpImage } from './BlurUpImage';
 import { PRODUCTS, BRAND_INFO } from '../data/brandData';
 import { GarmentProduct } from '../types';
+import { Footer } from './Footer';
 
 interface CollectionViewProps {
   onBack: () => void;
   onAddToCart: (product: GarmentProduct, size: string) => void;
   onOpenAR: (product: GarmentProduct) => void;
   onOpenVideo: (product: GarmentProduct) => void;
+  onNavigateToSection?: (sectionId: string) => void;
+  onOpenCart?: () => void;
+  cartCount?: number;
 }
 
 export const CollectionView: React.FC<CollectionViewProps> = ({
@@ -27,6 +31,9 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
   onAddToCart,
   onOpenAR,
   onOpenVideo,
+  onNavigateToSection,
+  onOpenCart,
+  cartCount,
 }) => {
   const [activeGender, setActiveGender] = useState<'homme' | 'femme' | 'tous'>('tous');
   const [activeIndex, setActiveIndex] = useState(0);
@@ -116,7 +123,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
   const dynamicAtmosphereColor = activeProduct?.themeColor || '#1F1F1C';
 
   return (
-    <div className="relative min-h-[100dvh] bg-[#000000] text-[#FFFAFA] flex flex-col justify-between overflow-x-hidden">
+    <div className="relative min-h-[100dvh] bg-[#000000] text-[#FFFAFA] flex flex-col justify-between overflow-x-clip selection:bg-[#F6D110] selection:text-[#1F1F1C]">
       {/* DYNAMIC ATMOSPHERE HALO */}
       <div 
         className="absolute inset-0 z-0 pointer-events-none transition-colors duration-1000 ease-out"
@@ -126,7 +133,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
       />
 
       {/* Header */}
-      <header className="relative z-50 flex items-center justify-between border-b border-white/5 bg-[#000000]/60 px-6 py-4 backdrop-blur-xl sm:px-12">
+      <header className="sticky top-0 z-50 flex items-center justify-between border-b border-white/5 bg-[#000000]/85 px-6 py-4 backdrop-blur-xl sm:px-12">
         <button
           onClick={onBack}
           className="font-logo text-[12px] font-semibold tracking-[.25em] text-[#FFFAFA] hover:text-[#F6D110] transition-colors flex items-center gap-2"
@@ -135,16 +142,33 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
           <span>NEÏROUA</span>
         </button>
 
-        <button
-          onClick={onBack}
-          className="flex items-center gap-2 font-ui text-[10px] uppercase tracking-[.25em] text-[#FFFAFA]/60 hover:text-[#F6D110] transition-colors"
-        >
-          <ArrowLeft size={12} strokeWidth={1.5} />
-          <span>RETOUR</span>
-        </button>
+        <div className="flex items-center gap-6">
+          {onOpenCart && (
+            <button
+              onClick={onOpenCart}
+              className="relative flex items-center gap-2 font-ui text-[11px] uppercase tracking-[.25em] text-[#FFFAFA] hover:text-[#F6D110] transition-colors"
+            >
+              <ShoppingBag size={14} />
+              <span className="hidden sm:inline">PANIER</span>
+              {(cartCount ?? 0) > 0 && (
+                <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#F6D110] text-[9px] font-bold text-black">
+                  {cartCount}
+                </span>
+              )}
+            </button>
+          )}
+
+          <button
+            onClick={onBack}
+            className="flex items-center gap-2 font-ui text-[10px] uppercase tracking-[.25em] text-[#FFFAFA]/60 hover:text-[#F6D110] transition-colors"
+          >
+            <ArrowLeft size={12} strokeWidth={1.5} />
+            <span>RETOUR</span>
+          </button>
+        </div>
       </header>
 
-      <main className="relative flex-1 flex flex-col items-center pt-8 pb-16 z-10 w-full overflow-hidden">
+      <main className="relative flex-1 flex flex-col items-center pt-8 pb-12 z-10 w-full overflow-visible">
         
         {/* Category Filters */}
         <div className="flex gap-4 mb-8 sm:mb-12">
@@ -168,10 +192,10 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
         </div>
 
         {/* Swipeable Carousel Container */}
-        <div className="relative w-full max-w-[1200px] h-[650px] sm:h-[700px] flex items-center justify-center">
+        <div className="relative w-full max-w-[1200px] min-h-[700px] sm:min-h-[760px] flex items-center justify-center my-4 overflow-visible">
           
           <motion.div 
-            className="w-full h-full flex items-center justify-center absolute"
+            className="w-full h-full flex items-center justify-center absolute overflow-visible"
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={0.2}
@@ -192,7 +216,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
                 // Position physics
                 const x = offset * (windowWidth < 640 ? 220 : 320);
                 const scale = isActive ? 1 : 0.85;
-                const zIndex = 50 - Math.abs(offset);
+                const zIndex = isHovered ? 60 : 50 - Math.abs(offset);
                 const opacity = isActive ? 1 : Math.max(0, 1 - Math.abs(offset) * 0.4);
                 
                 const currentViewIdx = activeViews[product.id] || 0;
@@ -229,18 +253,25 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
                     onClick={() => {
                       if (!isActive) {
                         setActiveIndex(idx);
+                      } else {
+                        setHoveredCardId(prev => prev === product.id ? null : product.id);
                       }
                     }}
                     onMouseEnter={() => isActive && setHoveredCardId(product.id)}
                     onMouseLeave={() => setHoveredCardId(null)}
                     style={cardStyle}
-                    className={`absolute flex flex-col overflow-hidden rounded-[24px] shadow-2xl transition-all duration-300
-                      ${isActive ? 'w-[320px] sm:w-[400px] cursor-default' : 'w-[280px] sm:w-[320px] cursor-pointer brightness-50'}
-                      ${isHovered ? 'h-[640px] sm:h-[680px]' : 'h-[500px] sm:h-[540px]'}
+                    className={`absolute flex flex-col rounded-[24px] shadow-2xl transition-all duration-300
+                      ${isActive ? 'w-[320px] sm:w-[410px] cursor-default' : 'w-[280px] sm:w-[320px] cursor-pointer brightness-50'}
+                      ${isHovered 
+                        ? 'min-h-[660px] sm:min-h-[700px] h-auto pb-6 overflow-visible shadow-[0_25px_60px_rgba(0,0,0,0.85)] ring-1 ring-white/20' 
+                        : 'h-[490px] sm:h-[530px] overflow-hidden'
+                      }
                     `}
                   >
-                    {/* Inner Content */}
-                    <div className="relative w-full h-[400px] shrink-0 bg-black/40 flex items-center justify-center p-4">
+                    {/* Inner Content - Image container scales gracefully on hover */}
+                    <div className={`relative w-full shrink-0 bg-black/40 flex items-center justify-center p-4 rounded-t-[24px] transition-all duration-300 ${
+                      isHovered ? 'h-[250px] sm:h-[280px]' : 'h-[360px] sm:h-[400px]'
+                    }`}>
                       {currentView?.image && (
                         <BlurUpImage
                           src={currentView.image}
@@ -274,7 +305,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
                     </div>
 
                     {/* Info Section */}
-                    <div className="p-6 flex flex-col flex-1">
+                    <div className="p-5 sm:p-6 flex flex-col flex-1">
                       <div className="flex justify-between items-start mb-2">
                         <div>
                           <p className="font-ui text-[9px] uppercase tracking-widest text-[#F6D110] mb-1">
@@ -284,16 +315,16 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
                             {product.name}
                           </h3>
                         </div>
-                        <span className="font-display text-lg font-bold text-white">
+                        <span className="font-display text-lg sm:text-xl font-bold text-white whitespace-nowrap pl-2">
                           {product.price}{product.currency}
                         </span>
                       </div>
 
                       {/* Expandable Details (Only visible when active AND hovered) */}
-                      <div className={`overflow-hidden transition-all duration-500 flex flex-col gap-4
-                        ${isHovered ? 'max-h-[300px] opacity-100 mt-4' : 'max-h-0 opacity-0 mt-0'}
+                      <div className={`transition-all duration-500 flex flex-col gap-3.5
+                        ${isHovered ? 'max-h-[600px] opacity-100 mt-3' : 'max-h-0 opacity-0 mt-0 overflow-hidden pointer-events-none'}
                       `}>
-                        <p className="font-ui text-[10px] sm:text-xs text-white/70">
+                        <p className="font-ui text-[10px] sm:text-xs text-white/70 line-clamp-2">
                           {currentView?.description || product.tagline}
                         </p>
 
@@ -304,7 +335,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
                               key={v.type}
                               onClick={(e) => { e.stopPropagation(); setActiveViews(prev => ({...prev, [product.id]: vI})); }}
                               className={`flex-1 py-1.5 text-[9px] font-ui uppercase tracking-wider rounded-md border transition-colors ${
-                                currentViewIdx === vI ? 'bg-white text-black border-white' : 'bg-transparent text-white/60 border-white/10 hover:border-white/30'
+                                currentViewIdx === vI ? 'bg-white text-black border-white font-bold' : 'bg-transparent text-white/60 border-white/10 hover:border-white/30'
                               }`}
                             >
                               {v.label}
@@ -315,7 +346,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
                         {/* Custom Color Selector (Pastilles) */}
                         {product.colors && (
                           <div className="flex gap-2 items-center">
-                            <span className="font-ui text-[9px] uppercase text-white/50">Coul:</span>
+                            <span className="font-ui text-[9px] uppercase text-white/50">COUL:</span>
                             {product.colors.map((color, cIdx) => (
                               <button
                                 key={cIdx}
@@ -327,32 +358,37 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
                         )}
 
                         {/* Size Selector */}
-                        <div className="flex gap-2">
-                          {product.sizes.map((s) => (
-                            <button
-                              key={s}
-                              onClick={(e) => { e.stopPropagation(); setSelectedSizes(prev => ({...prev, [product.id]: s})); }}
-                              className={`w-8 h-8 rounded-sm font-ui text-[10px] uppercase border transition-colors ${
-                                currentSize === s ? 'bg-[#F6D110] text-black border-[#F6D110]' : 'bg-black/40 text-white border-white/20 hover:border-white/50'
-                              }`}
-                            >
-                              {s}
-                            </button>
-                          ))}
+                        <div className="flex items-center gap-2">
+                          <span className="font-ui text-[9px] uppercase text-white/50">TAILLE:</span>
+                          <div className="flex gap-1.5 flex-wrap">
+                            {product.sizes.map((s) => (
+                              <button
+                                key={s}
+                                onClick={(e) => { e.stopPropagation(); setSelectedSizes(prev => ({...prev, [product.id]: s})); }}
+                                className={`w-8 h-8 rounded-md font-ui text-[10px] uppercase font-bold border transition-colors ${
+                                  currentSize === s ? 'bg-[#F6D110] text-black border-[#F6D110]' : 'bg-black/40 text-white border-white/20 hover:border-white/50'
+                                }`}
+                              >
+                                {s}
+                              </button>
+                            ))}
+                          </div>
                         </div>
 
-                        {/* CTA */}
+                        {/* CTA - 100% visible, Jaune Vif #F6D110, unclipped and prominent */}
                         <button
                           onClick={(e) => { e.stopPropagation(); handleBuy(product); }}
                           disabled={isAdded}
-                          className={`w-full py-3 rounded-full font-ui text-[10px] uppercase tracking-[.25em] font-bold transition-all ${
-                            isAdded ? 'bg-white text-black' : 'bg-[#F6D110] text-black hover:bg-white'
+                          className={`w-full py-3.5 px-5 rounded-full font-ui text-[11px] uppercase tracking-[.25em] font-bold shadow-lg transition-all duration-200 mt-2 shrink-0 ${
+                            isAdded 
+                              ? 'bg-white text-black' 
+                              : 'bg-[#F6D110] text-black hover:bg-white hover:scale-[1.02] active:scale-[0.98]'
                           }`}
                         >
                           {isAdded ? (
-                            <span className="flex items-center justify-center gap-2"><Check size={14} /> AJOUTÉ</span>
+                            <span className="flex items-center justify-center gap-2"><Check size={15} /> AJOUTÉ AU PANIER</span>
                           ) : (
-                            <span className="flex items-center justify-center gap-2"><ShoppingBag size={14} /> ACHETER</span>
+                            <span className="flex items-center justify-center gap-2"><ShoppingBag size={15} /> ACHETER // {product.price}{product.currency}</span>
                           )}
                         </button>
                       </div>
@@ -364,16 +400,31 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
           </motion.div>
           
           {/* Navigation Controls */}
-          <div className="absolute top-1/2 -translate-y-1/2 left-4 z-40">
-            <button onClick={() => setActiveIndex((prev) => (prev - 1 + totalItems) % totalItems)} className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-colors">
+          <div className="absolute top-1/2 -translate-y-1/2 left-2 sm:left-4 z-40">
+            <button 
+              onClick={() => setActiveIndex((prev) => (prev - 1 + totalItems) % totalItems)} 
+              className="w-10 h-10 rounded-full bg-black/50 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-colors"
+              aria-label="Pièce précédente"
+            >
               <ChevronLeft size={16} />
             </button>
           </div>
-          <div className="absolute top-1/2 -translate-y-1/2 right-4 z-40">
-            <button onClick={() => setActiveIndex((prev) => (prev + 1) % totalItems)} className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-colors">
+          <div className="absolute top-1/2 -translate-y-1/2 right-2 sm:right-4 z-40">
+            <button 
+              onClick={() => setActiveIndex((prev) => (prev + 1) % totalItems)} 
+              className="w-10 h-10 rounded-full bg-black/50 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-colors"
+              aria-label="Pièce suivante"
+            >
               <ChevronRight size={16} />
             </button>
           </div>
+        </div>
+
+        {/* Carousel Position Indicator */}
+        <div className="flex items-center justify-center gap-3 mt-4 font-ui text-[10px] uppercase tracking-[.3em] text-white/40">
+          <span>{activeIndex + 1} / {totalItems}</span>
+          <span>•</span>
+          <span>{activeProduct?.name}</span>
         </div>
 
         {/* Global Toast */}
@@ -391,6 +442,16 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
           )}
         </AnimatePresence>
       </main>
+
+      {/* 2. FOOTER - Intégration du Footer identique avec marge généreuse pour un dépliage sans heurt */}
+      <div className="w-full mt-24 sm:mt-32 relative z-20">
+        <Footer
+          onNavigateToCollection={() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          onNavigateToSection={onNavigateToSection}
+        />
+      </div>
     </div>
   );
 };

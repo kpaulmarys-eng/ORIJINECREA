@@ -188,6 +188,9 @@ export default function App() {
             onAddToCart={handleAddToCart}
             onOpenAR={handleOpenAR}
             onOpenVideo={handleOpenVideo}
+            onNavigateToSection={handleNavigateToSection}
+            onOpenCart={() => setIsCartOpen(true)}
+            cartCount={totalCartCount}
           />
         )}
 
