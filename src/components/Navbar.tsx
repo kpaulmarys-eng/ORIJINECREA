@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ShoppingBag, Menu, X, ArrowUpRight, Sparkles } from 'lucide-react';
 import { BRAND_INFO, BRAND_COLORS } from '../data/brandData';
+import officialLogo from '../assets/images/logo_official.png';
+import logoTextOfficial from '../assets/images/logo_text_official.png';
 
 interface NavbarProps {
   currentView: string;
@@ -10,6 +12,7 @@ interface NavbarProps {
   onNavigateToCollection: () => void;
   onOpenCart: () => void;
   onNavigateToSection?: (sectionId: string) => void;
+  isLogoRevealed?: boolean;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -19,6 +22,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onNavigateToCollection,
   onOpenCart,
   onNavigateToSection,
+  isLogoRevealed = true,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -52,7 +56,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         id="main-header"
         className="fixed left-0 right-0 top-0 z-50 flex items-center justify-between px-6 py-5 text-[#FFFAFA] bg-[#1F1F1C]/85 backdrop-blur-xl border-b border-[#FFFAFA]/10 sm:px-12 sm:py-6"
       >
-        {/* Brand Logo with Star Symbol */}
+        {/* Brand Logo with Official Lockup (Symbol + Typography) */}
         <button
           type="button"
           data-testid="button-home-top"
@@ -62,12 +66,21 @@ export const Navbar: React.FC<NavbarProps> = ({
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
           aria-label="Retour au début NEÏROUA"
-          className="focus:outline-none transition-opacity hover:opacity-80 cursor-pointer flex items-center gap-2"
+          className="focus:outline-none transition-opacity hover:opacity-85 cursor-pointer flex items-center relative py-1"
         >
-          <span className="text-[#F6D110] text-sm">✦</span>
-          <span className="font-logo whitespace-nowrap text-[#FFFAFA] text-[13px] tracking-[.26em] font-semibold">
-            NEÏROUA
-          </span>
+          <motion.div
+            id="navbar-logo-target"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: isLogoRevealed ? 1 : 0 }}
+            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+            className="flex items-center"
+          >
+            <img
+              src={logoTextOfficial}
+              alt="Logo NEÏROUA"
+              className="h-8 sm:h-9 w-auto object-contain select-none"
+            />
+          </motion.div>
         </button>
 
         {/* Desktop Navigation Links EXACT SPEC:
@@ -162,11 +175,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           >
             <div className="flex items-center justify-between border-b border-[#FFFAFA]/10 pb-6">
-              <div className="flex items-center gap-2">
-                <span className="text-[#F6D110]">✦</span>
-                <span className="font-logo whitespace-nowrap text-[#FFFAFA] text-[13px] tracking-[.25em] font-semibold">
-                  NEÏROUA
-                </span>
+              <div className="flex items-center">
+                <img src={logoTextOfficial} alt="Logo NEÏROUA" className="h-8 w-auto object-contain" />
               </div>
               <button
                 type="button"

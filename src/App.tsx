@@ -60,6 +60,7 @@ const playSound = (type: 'success' | 'error') => {
 export default function App() {
   // 1. Loading screen state (game health bar in deep black & starry sky)
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isLogoRevealed, setIsLogoRevealed] = useState(false);
 
   // Active view routing: 'home' | 'collection' | 'visualisation' | 'video'
   const [currentView, setCurrentView] = useState<
@@ -151,15 +152,12 @@ export default function App() {
       {/* 1. ÉCRAN DE CHARGEMENT : NOIR PROFOND, ÉTOILES QUI SCINTILLENT, LOGO AU MILIEU, BARRE DE VIE JEU VIDÉO BLANCHE */}
       <LoadingScreen
         isComplete={isLoaded}
+        onStartCrossfade={() => setIsLogoRevealed(true)}
         onComplete={() => setIsLoaded(true)}
       />
 
-      {/* Main Layout rendered after initial load */}
-      <div
-        className={`transition-opacity duration-700 ${
-          isLoaded ? 'opacity-100' : 'opacity-0 pointer-events-none'
-        }`}
-      >
+      {/* Main Layout rendered behind loading overlay */}
+      <div className="relative">
         {/* Navigation Bar (visible across views with 4 requested sections) */}
         {currentView === 'home' && (
           <Navbar
@@ -175,6 +173,7 @@ export default function App() {
             }}
             onNavigateToSection={handleNavigateToSection}
             currentView={currentView}
+            isLogoRevealed={isLogoRevealed || isLoaded}
           />
         )}
 

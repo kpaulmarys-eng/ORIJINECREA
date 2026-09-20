@@ -15,6 +15,8 @@ import { BlurUpImage } from './BlurUpImage';
 import { PRODUCTS, BRAND_INFO } from '../data/brandData';
 import { GarmentProduct } from '../types';
 import { Footer } from './Footer';
+import officialLogo from '../assets/images/logo_official.png';
+import logoTextOfficial from '../assets/images/logo_text_official.png';
 
 interface CollectionViewProps {
   onBack: () => void;
@@ -136,10 +138,10 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
       <header className="sticky top-0 z-50 flex items-center justify-between border-b border-white/5 bg-[#000000]/85 px-6 py-4 backdrop-blur-xl sm:px-12">
         <button
           onClick={onBack}
-          className="font-logo text-[12px] font-semibold tracking-[.25em] text-[#FFFAFA] hover:text-[#F6D110] transition-colors flex items-center gap-2"
+          aria-label="Retour à l'accueil NEÏROUA"
+          className="focus:outline-none transition-opacity hover:opacity-85 cursor-pointer flex items-center"
         >
-          <span className="text-[#F6D110] text-sm">✦</span>
-          <span>NEÏROUA</span>
+          <img src={logoTextOfficial} alt="Logo NEÏROUA" className="h-8 sm:h-9 w-auto object-contain select-none" />
         </button>
 
         <div className="flex items-center gap-6">

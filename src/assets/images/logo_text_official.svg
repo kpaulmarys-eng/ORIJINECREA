@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 220" width="440" height="220" fill="none">
+  <!-- Official NEÏROUA Emblem + Wordmark Lockup -->
+  <!-- Top 3 Radiating Rays (Emblem) -->
+  <g stroke="#FFFFFF" stroke-width="11" stroke-linecap="round">
+    <!-- Center Vertical Ray -->
+    <line x1="220" y1="12" x2="220" y2="70" />
+    <!-- Left Angled Ray -->
+    <line x1="160" y1="26" x2="198" y2="68" />
+    <!-- Right Angled Ray -->
+    <line x1="280" y1="26" x2="242" y2="68" />
+  </g>
+
+  <!-- Wordmark NEÏROUA -->
+  <!-- Two dots on the letter Ï -->
+  <circle cx="137" cy="74" r="7.5" fill="#FFFFFF" />
+  <circle cx="157" cy="74" r="7.5" fill="#FFFFFF" />
+
+  <text 
+    x="220" 
+    y="185" 
+    text-anchor="middle" 
+    fill="#FFFFFF" 
+    font-family="'Cinzel', 'Playfair Display', serif" 
+    font-weight="800" 
+    font-size="94" 
+    letter-spacing="0.08em"
+  >
+    NEÏROUA
+  </text>
+</svg>
