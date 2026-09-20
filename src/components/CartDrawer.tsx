@@ -11,6 +11,7 @@ interface CartDrawerProps {
   onUpdateQuantity: (productId: string, size: string, delta: number) => void;
   onRemoveItem: (productId: string, size: string) => void;
   onClearCart: () => void;
+  onCheckout?: (success: boolean) => void;
 }
 
 export const CartDrawer: React.FC<CartDrawerProps> = ({
@@ -20,6 +21,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
   onUpdateQuantity,
   onRemoveItem,
   onClearCart,
+  onCheckout,
 }) => {
   const [checkoutStep, setCheckoutStep] = useState<'cart' | 'checkout' | 'success'>('cart');
   const [customerName, setCustomerName] = useState('');
@@ -30,7 +32,12 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
   const handleCheckoutSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (customerName.length < 2 || customerCity.length < 2) {
+      if (onCheckout) onCheckout(false);
+      return;
+    }
     setCheckoutStep('success');
+    if (onCheckout) onCheckout(true);
     setTimeout(() => {
       onClearCart();
     }, 4500);

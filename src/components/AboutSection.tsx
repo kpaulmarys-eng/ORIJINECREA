@@ -1,6 +1,6 @@
 import React from 'react';
-import { motion } from 'motion/react';
 import { Sparkles } from 'lucide-react';
+import { ScrollReveal } from './ScrollReveal';
 
 interface AboutSectionProps {
   onNavigateToCollection?: () => void;
@@ -16,7 +16,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onNavigateToCollecti
       {/* Subtle Ambient Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-[#F6D110]/[0.025] blur-3xl pointer-events-none" />
 
-      <div className="mx-auto max-w-3xl relative z-10">
+      <ScrollReveal className="mx-auto max-w-3xl relative z-10" yOffset={40} duration={0.9}>
         {/* Section Pill / Tag */}
         <div className="inline-flex items-center gap-2 rounded-full border border-[#F6D110]/40 bg-[#1F1F1C] px-3.5 py-1 font-ui text-[10px] uppercase tracking-[.32em] text-[#F6D110] font-semibold mb-6">
           <Sparkles size={11} className="text-[#F6D110]" />
@@ -54,7 +54,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onNavigateToCollecti
             </p>
           </div>
         </div>
-      </div>
+      </ScrollReveal>
     </section>
   );
 };

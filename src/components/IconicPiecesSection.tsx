@@ -4,6 +4,7 @@ import { Sparkles, ArrowRight, Box, Video, ShoppingBag, Check } from 'lucide-rea
 import { PRODUCTS } from '../data/brandData';
 import { BlurUpImage } from './BlurUpImage';
 import { GarmentProduct } from '../types';
+import { ScrollReveal } from './ScrollReveal';
 
 interface IconicPiecesSectionProps {
   onNavigateToCollection: () => void;
@@ -53,15 +54,15 @@ export const IconicPiecesSection: React.FC<IconicPiecesSectionProps> = ({
     <section
       id="iconic-pieces"
       data-testid="section-iconic-pieces"
-      className="relative overflow-hidden bg-[#181815] px-6 py-16 text-[#FFFAFA] sm:px-10 sm:py-20 lg:py-24 border-t border-[#FFFAFA]/10"
+      className="relative overflow-hidden bg-[#181815] px-6 py-20 text-[#FFFAFA] sm:px-12 sm:py-24 lg:py-32 border-t border-[#FFFAFA]/10"
     >
       {/* Ambient Radial Spotlight */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] rounded-full bg-[#F6D110]/[0.025] blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] rounded-full bg-[#F6D110]/[0.025] blur-[120px] pointer-events-none" />
 
-      <div className="mx-auto max-w-6xl relative z-10">
+      <div className="mx-auto max-w-7xl relative z-10">
         {/* Section Header: Structured, Balanced, No Excessive Whitespace */}
-        <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14">
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#F6D110]/35 bg-[#1F1F1C] px-3.5 py-1 font-ui text-[11px] uppercase tracking-[.3em] text-[#F6D110] font-semibold mb-3">
+        <ScrollReveal yOffset={30} duration={0.8} className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#F6D110]/35 bg-[#1F1F1C] px-3.5 py-1 font-ui text-[11px] uppercase tracking-[.3em] text-[#F6D110] font-semibold mb-4">
             <Sparkles size={12} className="text-[#F6D110]" />
             <span>SÉLECTION EMBLÉMATIQUE // PILIERS EGO</span>
           </div>
@@ -70,13 +71,14 @@ export const IconicPiecesSection: React.FC<IconicPiecesSectionProps> = ({
             Pièces Iconiques
           </h2>
 
-          <p className="mt-3 font-ui text-sm sm:text-base font-light text-[#FFFAFA]/75 leading-relaxed">
+          <p className="mt-4 font-ui text-sm sm:text-base font-light text-[#FFFAFA]/75 leading-relaxed">
             Deux silhouettes fondatrices. Matière brute, coupe architecturale drop-shoulder et présence affirmée.
           </p>
-        </div>
+        </ScrollReveal>
 
         {/* Showcase Grid: EXACTLY TWO CARDS, Fills the page harmoniously with Square Folded resting state and smooth unfolding on hover */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10 max-w-5xl mx-auto items-start">
+        <ScrollReveal yOffset={45} delay={0.12} duration={0.9}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 max-w-6xl mx-auto items-start">
           {iconicProducts.map((product, index) => {
             const currentSize = selectedSizes[product.id] || product.sizes[0] || 'M';
             const currentViewIdx = activeViews[product.id] || 0;
@@ -89,7 +91,7 @@ export const IconicPiecesSection: React.FC<IconicPiecesSectionProps> = ({
                 key={product.id}
                 onMouseEnter={() => setHoveredId(product.id)}
                 onMouseLeave={() => setHoveredId(null)}
-                className={`relative flex flex-col w-full max-w-[460px] mx-auto overflow-hidden rounded-[30px] bg-[#1C1C19] border transition-all duration-500 ease-out shadow-xl cursor-pointer ${
+                className={`relative flex flex-col w-full max-w-[540px] mx-auto overflow-hidden rounded-[30px] bg-[#1C1C19] border transition-all duration-500 ease-out shadow-xl cursor-pointer ${
                   isHovered
                     ? 'border-[#F6D110]/70 shadow-[0_25px_60px_rgba(0,0,0,0.85)] -translate-y-1'
                     : 'border-[#FFFAFA]/10 hover:border-[#FFFAFA]/25'
@@ -299,10 +301,11 @@ export const IconicPiecesSection: React.FC<IconicPiecesSectionProps> = ({
               </article>
             );
           })}
-        </div>
+          </div>
+        </ScrollReveal>
 
         {/* Refined Discovery Link */}
-        <div className="mt-12 text-center">
+        <ScrollReveal yOffset={25} delay={0.2} duration={0.8} className="mt-12 text-center">
           <button
             type="button"
             onClick={onNavigateToCollection}
@@ -311,7 +314,7 @@ export const IconicPiecesSection: React.FC<IconicPiecesSectionProps> = ({
             <span>ACCÉDER À TOUTES LES PIÈCES DU CATALOGUE</span>
             <ArrowRight size={14} />
           </button>
-        </div>
+        </ScrollReveal>
       </div>
     </section>
   );

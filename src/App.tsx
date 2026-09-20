@@ -15,6 +15,47 @@ import { VideoModal } from './components/VideoModal';
 import { CartDrawer } from './components/CartDrawer';
 import { CustomCursor } from './components/CustomCursor';
 import { GarmentProduct, CartItem } from './types';
+import { VideoBannerSection } from './components/VideoBannerSection';
+import { MarqueeBands } from './components/MarqueeBands';
+import { ScrollReveal } from './components/ScrollReveal';
+
+import { ShoppingBag } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+
+// Play sound helper
+const playSound = (type: 'success' | 'error') => {
+  try {
+    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    const ctx = new AudioContextClass();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    
+    if (type === 'success') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(600, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.1);
+      gain.gain.setValueAtTime(0, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.2, ctx.currentTime + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.3);
+    } else {
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(200, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.2);
+      gain.gain.setValueAtTime(0, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.2, ctx.currentTime + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.2);
+    }
+    
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+  } catch (e) {
+    console.warn('Audio Context error', e);
+  }
+};
 
 export default function App() {
   // 1. Loading screen state (game health bar in deep black & starry sky)
@@ -38,6 +79,7 @@ export default function App() {
 
   // Cart actions
   const handleAddToCart = (product: GarmentProduct, size: string) => {
+    playSound('success');
     setCartItems((prev) => {
       const existingIndex = prev.findIndex(
         (item) => item.product.id === product.id && item.size === size
@@ -187,6 +229,12 @@ export default function App() {
               onScrollToEgo={() => handleNavigateToSection('iconic-pieces')}
             />
 
+            {/* 1.5 NEW VIDEO BANNER + SECOND MARQUEE */}
+            <VideoBannerSection />
+            <ScrollReveal yOffset={20} duration={0.8} className="relative z-20">
+              <MarqueeBands />
+            </ScrollReveal>
+
             {/* 2. PIÈCES ICONIQUES (Exactement 2 pièces, épurées, révélées au survol) */}
             <IconicPiecesSection
               onNavigateToCollection={() => {
@@ -259,7 +307,35 @@ export default function App() {
         onUpdateQuantity={handleUpdateQuantity}
         onRemoveItem={handleRemoveItem}
         onClearCart={handleClearCart}
+        onCheckout={(success: boolean) => {
+          if (!success || cartItems.length === 0) {
+            playSound('error');
+          } else {
+            playSound('success');
+            // Cart will be cleared by CartDrawer success timeout
+          }
+        }}
       />
+
+      {/* STICKY GLOBAL CART BUTTON */}
+      <AnimatePresence>
+        {isLoaded && !isCartOpen && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            onClick={() => setIsCartOpen(true)}
+            className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-[80] flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-[#F6D110] text-[#1F1F1C] shadow-[0_10px_30px_rgba(246,209,16,0.3)] hover:scale-110 transition-transform cursor-pointer"
+          >
+            <ShoppingBag size={24} strokeWidth={2} />
+            {totalCartCount > 0 && (
+              <span className="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-white text-[10px] font-bold text-black shadow-md border border-[#1F1F1C]">
+                {totalCartCount}
+              </span>
+            )}
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

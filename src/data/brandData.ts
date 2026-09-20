@@ -100,6 +100,8 @@ export const PRODUCTS: GarmentProduct[] = [
     arAvailable: true,
     videoDuration: '0:35',
     sizes: ['S', 'M', 'L', 'XL'],
+    colors: ['#000000', '#F6D110', '#0C5FB3'],
+    themeColor: '#1F1F1C',
     views: [
       {
         type: 'face',
@@ -135,6 +137,8 @@ export const PRODUCTS: GarmentProduct[] = [
     arAvailable: true,
     videoDuration: '0:28',
     sizes: ['M', 'L', 'XL'],
+    colors: ['#3A3A3A', '#000000'],
+    themeColor: '#3A3A3A',
     views: [
       {
         type: 'face',
@@ -170,6 +174,8 @@ export const PRODUCTS: GarmentProduct[] = [
     arAvailable: true,
     videoDuration: '0:32',
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+    colors: ['#0C5FB3', '#F6D110', '#000000'],
+    themeColor: '#0C5FB3',
     views: [
       {
         type: 'face',
@@ -205,6 +211,8 @@ export const PRODUCTS: GarmentProduct[] = [
     arAvailable: true,
     videoDuration: '0:45',
     sizes: ['S', 'M', 'L', 'XL'],
+    colors: ['#000000'],
+    themeColor: '#000000',
     views: [
       {
         type: 'face',
@@ -240,6 +248,8 @@ export const PRODUCTS: GarmentProduct[] = [
     arAvailable: true,
     videoDuration: '0:38',
     sizes: ['M', 'L', 'XL'],
+    colors: ['#1F1F1C'],
+    themeColor: '#1F1F1C',
     views: [
       {
         type: 'face',
@@ -277,6 +287,8 @@ export const PRODUCTS: GarmentProduct[] = [
     arAvailable: true,
     videoDuration: '0:40',
     sizes: ['XS', 'S', 'M', 'L'],
+    colors: ['#F5F5DC', '#FFFFFF'],
+    themeColor: '#F5F5DC',
     views: [
       {
         type: 'face',
@@ -312,6 +324,8 @@ export const PRODUCTS: GarmentProduct[] = [
     arAvailable: true,
     videoDuration: '0:30',
     sizes: ['XS', 'S', 'M', 'L'],
+    colors: ['#000000', '#F6D110'],
+    themeColor: '#1A1A1A',
     views: [
       {
         type: 'face',
@@ -347,6 +361,8 @@ export const PRODUCTS: GarmentProduct[] = [
     arAvailable: true,
     videoDuration: '0:30',
     sizes: ['XS', 'S', 'M', 'L'],
+    colors: ['#EAEAEA', '#F6D110'],
+    themeColor: '#EAEAEA',
     views: [
       {
         type: 'face',

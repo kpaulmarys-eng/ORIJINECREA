@@ -8,7 +8,7 @@ interface ARModalProps {
   product?: any;
 }
 
-export const ARModal: React.FC<ARModalProps> = ({ isOpen, onClose }) => {
+export const ARModal: React.FC<ARModalProps> = ({ isOpen, onClose, product }) => {
   if (!isOpen) return null;
 
   return (
@@ -50,6 +50,22 @@ export const ARModal: React.FC<ARModalProps> = ({ isOpen, onClose }) => {
           <p className="mt-4 font-ui font-light text-[#f4f0e4]/60">
             La pièce apparaîtra dans votre espace.
           </p>
+
+          {/* Color Selector */}
+          {product?.colors && (
+            <div className="mt-6 flex flex-col items-center gap-3">
+              <span className="font-ui text-[9px] uppercase text-white/50">SÉLECTIONNEZ UNE VARIANTE COULEUR</span>
+              <div className="flex gap-3">
+                {product.colors.map((color: string, cIdx: number) => (
+                  <button
+                    key={cIdx}
+                    className={`w-6 h-6 rounded-full border border-white/20 hover:scale-110 transition-transform ${cIdx === 0 ? 'ring-1 ring-[#F6D110] ring-offset-2 ring-offset-black' : ''}`}
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
 
           <button
             type="button"

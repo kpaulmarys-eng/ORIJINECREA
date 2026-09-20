@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import { motion } from 'motion/react';
-import { ArrowUpRight } from 'lucide-react';
-import { SilhouetteFabric } from './SilhouetteFabric';
+import React, { useState, useRef, useEffect } from 'react';
+import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'motion/react';
+import { ScrollReveal } from './ScrollReveal';
 import tshirtCyberGraphic from '../assets/images/tshirt_cyber_graphic_1789595670090.jpg';
 import tshirtBlackBoxy from '../assets/images/tshirt_black_boxy_1789595644021.jpg';
 import tshirtRawBone from '../assets/images/tshirt_raw_bone_1789595658414.jpg';
@@ -15,172 +14,295 @@ interface ExperienceCoverFlowProps {
 const PANELS = [
   {
     id: 'visualisation',
-    label: 'VISUALISATION 3D',
+    num: '01',
+    label: 'VISUALISATION',
     subtitle: 'SCAN VOLUMÉTRIQUE 360°',
-    copy: 'Explorez les maillages et la structure tridimensionnelle sous toutes les perspectives.',
-    variant: 1,
     image: tshirtCyberGraphic,
-    badge: 'SCAN SPATIAL 360°',
   },
   {
     id: 'collection',
-    label: 'COLLECTION T-SHIRTS',
+    num: '02',
+    label: 'COLLECTION',
     subtitle: 'CAPSULE ARCHITECTURALE',
-    copy: 'T-Shirts Boxy & Coupes Sculpturales. Coton lourd teinté dans la masse.',
-    variant: 0,
     image: tshirtBlackBoxy,
-    badge: 'HOMME & FEMME',
   },
   {
     id: 'video',
-    label: 'VIDÉO RUNWAY',
-    subtitle: 'FILM CINÉMATOGRAPHIQUE',
-    copy: 'Les pièces en mouvement dans la lumière. Expérience visuelle et sonore.',
-    variant: 2,
+    num: '03',
+    label: 'VIDÉO',
+    subtitle: 'FILM RUNWAY & MATIÈRE',
     image: tshirtRawBone,
-    badge: 'FILM 4K',
   },
 ];
+
+const NOISE_SVG = `data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E`;
+
+// Inject custom styles for the micro-glitch effect
+const GlitchStyles = () => (
+  <style>{`
+    .glitch-text {
+      animation: rgbText 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+    }
+    @keyframes rgbText {
+      0% { text-shadow: 0 0 0 #0C5FB3, 0 0 0 #F6D110; transform: translate(0); }
+      20% { text-shadow: -3px 0 0 #0C5FB3, 3px 0 0 #F6D110; transform: translate(2px); }
+      40% { text-shadow: 3px 0 0 #0C5FB3, -3px 0 0 #F6D110; transform: translate(-2px); }
+      60% { text-shadow: -2px 0 0 #0C5FB3, 2px 0 0 #F6D110; transform: translate(1px); }
+      80% { text-shadow: 2px 0 0 #0C5FB3, -2px 0 0 #F6D110; transform: translate(-1px); }
+      100% { text-shadow: 0 0 0 #0C5FB3, 0 0 0 #F6D110; transform: translate(0); }
+    }
+
+    .glitch-image {
+      animation: rgbImage 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+    }
+    @keyframes rgbImage {
+      0% { filter: contrast(1); transform: scale(1.05) translate(0); }
+      20% { filter: contrast(1.3) hue-rotate(15deg); transform: scale(1.05) translate(4px, -2px); }
+      40% { filter: contrast(0.8) hue-rotate(-15deg); transform: scale(1.05) translate(-4px, 2px); }
+      60% { filter: contrast(1.2); transform: scale(1.05) translate(2px, -1px); }
+      80% { filter: contrast(0.9); transform: scale(1.05) translate(-2px, 1px); }
+      100% { filter: contrast(1); transform: scale(1.05) translate(0); }
+    }
+  `}</style>
+);
+
+const ExperienceSurface: React.FC<{
+  panel: typeof PANELS[0];
+  isHovered: boolean;
+  isSelected: boolean;
+  anyHovered: boolean;
+  anySelected: boolean;
+  onHover: () => void;
+  onLeave: () => void;
+  onClick: () => void;
+}> = ({ panel, isHovered, isSelected, anyHovered, anySelected, onHover, onLeave, onClick }) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [isGlitching, setIsGlitching] = useState(false);
+
+  // Parallax Motion Values
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const springConfig = { stiffness: 60, damping: 20, mass: 0.5 };
+  const smoothX = useSpring(mouseX, springConfig);
+  const smoothY = useSpring(mouseY, springConfig);
+  
+  const translateX = useTransform(smoothX, [-1, 1], [-20, 20]);
+  const translateY = useTransform(smoothY, [-1, 1], [-20, 20]);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!cardRef.current || !isHovered) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    const y = ((e.clientY - rect.top) / rect.height) * 2 - 1;
+    mouseX.set(x);
+    mouseY.set(y);
+  };
+
+  const handleMouseEnter = () => {
+    onHover();
+    setIsGlitching(true);
+    setTimeout(() => setIsGlitching(false), 350);
+  };
+
+  const handleMouseLeave = () => {
+    onLeave();
+    mouseX.set(0);
+    mouseY.set(0);
+  };
+
+  // Determine Flex Grow dynamically
+  let flexGrow = 1;
+  if (isSelected) flexGrow = 100;
+  else if (anySelected) flexGrow = 0.001; // Shrink others to almost 0
+  else if (isHovered) flexGrow = 2.5; // Expand significantly on hover
+  else if (anyHovered) flexGrow = 0.8; // Shrink slightly to make room
+
+  return (
+    <motion.article
+      ref={cardRef}
+      layout
+      transition={{ type: 'spring', stiffness: 150, damping: 25, mass: 0.8 }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onMouseMove={handleMouseMove}
+      onClick={onClick}
+      style={{ flexGrow, flexBasis: 0, overflow: 'hidden' }}
+      className={`relative h-full bg-[#050505] cursor-pointer group rounded-sm border transition-colors duration-500
+        ${isSelected ? 'border-transparent' : (isHovered ? 'border-white/10' : 'border-[#1F1F1C]')}
+      `}
+    >
+      {/* Dynamic Image Container */}
+      <div className="absolute inset-0 w-full h-full overflow-hidden">
+        <motion.img
+          src={panel.image}
+          alt={panel.label}
+          style={{ x: translateX, y: translateY }}
+          animate={{
+            scale: isSelected ? 1 : (isHovered ? 1.05 : 1.15),
+            filter: isSelected ? 'grayscale(0%) brightness(1)' : (isHovered ? 'grayscale(0%) brightness(1.1)' : 'grayscale(60%) brightness(0.6)'),
+          }}
+          transition={{ scale: { type: 'spring', stiffness: 120, damping: 30 } }}
+          className={`absolute inset-0 w-full h-full object-cover origin-center ${isGlitching ? 'glitch-image' : ''}`}
+        />
+        
+        {/* Dark Overlays for depth and text legibility */}
+        <motion.div 
+          animate={{ opacity: isSelected ? 0.3 : (isHovered ? 0.4 : 0.8) }}
+          className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none transition-opacity duration-700" 
+        />
+        
+        {/* Subtle Noise Overlay */}
+        <div 
+          className="absolute inset-0 pointer-events-none opacity-[0.03] mix-blend-overlay"
+          style={{ backgroundImage: `url("${NOISE_SVG}")` }}
+        />
+      </div>
+
+      {/* Floating UI Content */}
+      <AnimatePresence>
+        {!anySelected && (
+          <motion.div 
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 flex flex-col justify-between p-6 md:p-10 z-20 pointer-events-none"
+          >
+            {/* Top Info */}
+            <motion.div 
+              animate={{ opacity: isHovered ? 1 : 0, y: isHovered ? 0 : -10 }}
+              transition={{ duration: 0.4 }}
+              className="flex items-center gap-3"
+            >
+              <div className="w-1.5 h-1.5 rounded-full bg-[#F6D110] animate-pulse" />
+              <span className="font-ui text-xs text-white/70 uppercase tracking-[.3em] font-medium">
+                {panel.subtitle}
+              </span>
+            </motion.div>
+
+            {/* Bottom Titles */}
+            <div className="relative">
+              <div className="text-[100px] md:text-[140px] font-display text-white/5 leading-none -mb-6 md:-mb-10 font-bold tracking-tighter">
+                {panel.num}
+              </div>
+              <h3 className={`text-4xl md:text-5xl lg:text-6xl font-display uppercase font-bold text-white leading-none tracking-tight
+                ${isGlitching ? 'glitch-text' : ''}
+              `}>
+                {panel.label}
+              </h3>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Activation Glow Frame */}
+      <div className={`absolute inset-0 border-[1px] pointer-events-none transition-all duration-300 mix-blend-screen
+        ${isHovered && !isSelected ? 'border-[#0C5FB3] opacity-30 scale-95' : 'border-transparent opacity-0 scale-100'}
+      `} />
+    </motion.article>
+  );
+};
 
 export const ExperienceCoverFlow: React.FC<ExperienceCoverFlowProps> = ({
   onOpenVisualizer,
   onOpenVideo,
   onSelectCollection,
 }) => {
-  const [activeIndex, setActiveIndex] = useState(1);
-  const xOffsets = [-190, 0, 190];
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [transitionProgress, setTransitionProgress] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
-  const handleCardClick = (id: string) => {
-    if (id === 'visualisation') {
-      onOpenVisualizer();
-    } else if (id === 'collection') {
-      onSelectCollection();
-    } else if (id === 'video') {
-      onOpenVideo();
-    }
+  const handleClick = (id: string) => {
+    if (selectedId) return;
+
+    setSelectedId(id);
+    setIsTransitioning(true);
+    setTransitionProgress(0);
+
+    const duration = 800; // ms transition duration
+    const start = performance.now();
+
+    const animateProgress = (now: number) => {
+      const elapsed = now - start;
+      const p = Math.min((elapsed / duration) * 100, 100);
+      // Cubic ease-out curve for elegant loading
+      const easeOut = 1 - Math.pow(1 - p / 100, 3);
+      setTransitionProgress(easeOut * 100);
+
+      if (elapsed < duration) {
+        requestAnimationFrame(animateProgress);
+      } else {
+        if (id === 'visualisation') onOpenVisualizer();
+        else if (id === 'collection') onSelectCollection();
+        else if (id === 'video') onOpenVideo();
+
+        setTimeout(() => {
+          setSelectedId(null);
+          setIsTransitioning(false);
+          setTransitionProgress(0);
+        }, 400);
+      }
+    };
+    
+    requestAnimationFrame(animateProgress);
   };
 
   return (
     <section
-      id="experiences"
-      data-testid="section-experiences"
-      className="relative overflow-hidden bg-[#1F1F1C] px-5 py-28 text-[#FFFAFA] sm:px-10 sm:py-36 border-t border-[#FFFAFA]/10"
+      id="experience"
+      className="relative w-full bg-[#000000] px-4 py-16 sm:px-8 sm:py-24 lg:py-32"
     >
-      {/* Background Soft Ambient Light */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-[#F6D110]/[0.025] blur-[120px] pointer-events-none" />
+      {/* Transition Loading Indicator */}
+      <AnimatePresence>
+        {isTransitioning && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed bottom-0 left-0 w-full z-[100] h-[2px] bg-white/10"
+          >
+            <div 
+              className="h-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]"
+              style={{ width: `${transitionProgress}%` }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Section Header */}
-      <div className="mx-auto flex max-w-7xl items-end justify-between">
-        <div>
-          <p className="font-ui text-[11px] uppercase tracking-[.35em] text-[#F6D110] font-semibold">
-            EXPÉRIENCES D'IMMERSION // NEÏROUA
-          </p>
-          <h2 className="mt-3 font-display text-5xl font-semibold tracking-[-.04em] sm:text-7xl text-[#FFFAFA]">
-            Choisis ton angle.
+      <GlitchStyles />
+
+      <div className="mx-auto max-w-[1600px]">
+        {/* Section Header */}
+        <ScrollReveal yOffset={30} duration={0.8} className="mb-10 lg:mb-14 px-2">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="w-8 h-[1px] bg-[#F6D110]" />
+            <span className="font-ui text-[10px] uppercase tracking-[.4em] text-[#F6D110] font-bold">
+              IMMERSION DIGITALE
+            </span>
+          </div>
+          <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold tracking-wide text-[#FFFAFA] uppercase">
+            Choisis Ton Angle
           </h2>
-        </div>
-        <span className="hidden font-ui text-[10px] uppercase tracking-[.28em] text-[#FFFAFA]/50 sm:block">
-          03 / EXPÉRIENCES IMMERSIVES
-        </span>
+        </ScrollReveal>
+
+        {/* Living Surfaces Composition (The Core Redesign) */}
+        <ScrollReveal yOffset={45} delay={0.12} duration={0.9} className="w-full">
+          <div className="flex flex-col md:flex-row w-full h-[65vh] md:h-[75vh] gap-3 md:gap-5">
+            {PANELS.map((panel) => (
+              <ExperienceSurface
+                key={panel.id}
+                panel={panel}
+                isHovered={hoveredId === panel.id}
+                isSelected={selectedId === panel.id}
+                anyHovered={hoveredId !== null}
+                anySelected={selectedId !== null}
+                onHover={() => setHoveredId(panel.id)}
+                onLeave={() => setHoveredId(null)}
+                onClick={() => handleClick(panel.id)}
+              />
+            ))}
+          </div>
+        </ScrollReveal>
       </div>
-
-      {/* 3D Glass Coverflow Stage (Sans contour autour, pur design épuré et respirant) */}
-      <div className="perspective-stage relative mx-auto mt-12 h-[500px] max-w-5xl sm:h-[550px]">
-        {PANELS.map((panel, idx) => {
-          const isActive = activeIndex === idx;
-
-          return (
-            <motion.button
-              key={panel.id}
-              type="button"
-              data-cursor="OPEN"
-              data-testid={`panel-${panel.label.toLowerCase().replace(/\s+/g, '-')}`}
-              className="absolute left-1/2 top-0 h-[460px] w-[min(74vw,310px)] -translate-x-1/2 overflow-hidden rounded-[28px] text-left sm:h-[510px] cursor-pointer focus:outline-none transition-all group backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.85)] border-0"
-              style={{
-                background: isActive
-                  ? 'linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(20, 20, 18, 0.75) 100%)'
-                  : 'linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(15, 15, 14, 0.6) 100%)',
-              }}
-              animate={{
-                x: xOffsets[idx] * 0.85,
-                scale: isActive ? 1 : 0.86,
-                rotateY: isActive ? 0 : idx < activeIndex ? 14 : -14,
-                filter: isActive ? 'brightness(1)' : 'brightness(0.4)',
-                zIndex: isActive ? 50 : 30 - Math.abs(idx - activeIndex),
-              }}
-              transition={{ type: 'spring', stiffness: 200, damping: 26 }}
-              onMouseEnter={() => setActiveIndex(idx)}
-              onMouseLeave={() => setActiveIndex(1)}
-              onFocus={() => setActiveIndex(idx)}
-              onClick={() => handleCardClick(panel.id)}
-            >
-              {/* Top Glass Specular Glow line */}
-              <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/25 to-transparent pointer-events-none" />
-
-              {/* Real Garment Photography visual */}
-              <div className="absolute inset-0">
-                <SilhouetteFabric
-                  variant={panel.variant}
-                  imageSrc={panel.image}
-                  label={panel.subtitle}
-                  showDetails={false}
-                />
-              </div>
-
-              {/* Glass Frost Scrim Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#141412] via-[#141412]/50 to-transparent transition-opacity group-hover:from-[#141412]/95" />
-
-              {/* Top Glass Pill Badge */}
-              <div className="absolute inset-x-5 top-5 flex justify-between items-center z-10 sm:inset-x-6 sm:top-6">
-                <span className="rounded-full bg-white/[0.08] backdrop-blur-md px-3 py-1 font-ui text-[9px] uppercase tracking-[.25em] text-[#F6D110] font-semibold shadow-sm">
-                  {panel.badge}
-                </span>
-                <span className="font-ui text-[10px] tracking-[.3em] text-[#FFFAFA]/60 font-mono">
-                  0{idx + 1} / 03
-                </span>
-              </div>
-
-              {/* Card Glass Meta Content: Clean title and indicator in default state, copy & CTA reveal on hover/active */}
-              <div className="absolute inset-x-5 bottom-5 z-10 sm:inset-x-6 sm:bottom-6">
-                <div className="mb-1.5 flex justify-between font-ui text-[9px] uppercase tracking-[.28em] text-[#FFFAFA]/60">
-                  <span>{panel.subtitle}</span>
-                  <span
-                    className={`h-1.5 w-1.5 rounded-full transition-colors ${
-                      isActive ? 'bg-[#F6D110]' : 'bg-white/30'
-                    }`}
-                  />
-                </div>
-
-                <h3 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-[#FFFAFA] group-hover:text-[#F6D110] transition-colors">
-                  {panel.label}
-                </h3>
-
-                {/* Extra Details Revealed ONLY on Hover/Active */}
-                <div
-                  className={`overflow-hidden transition-all duration-300 ease-out ${
-                    isActive
-                      ? 'max-h-36 opacity-100 mt-2 pointer-events-auto'
-                      : 'max-h-0 opacity-0 pointer-events-none'
-                  }`}
-                >
-                  <p className="font-ui text-xs font-light leading-relaxed text-[#FFFAFA]/80">
-                    {panel.copy}
-                  </p>
-
-                  <span className="mt-3.5 inline-flex items-center gap-1.5 font-ui text-[10px] uppercase tracking-[.25em] text-[#F6D110] font-semibold group-hover:translate-x-1.5 transition-transform">
-                    OUVRIR L'EXPÉRIENCE <ArrowUpRight size={12} strokeWidth={1.5} />
-                  </span>
-                </div>
-              </div>
-            </motion.button>
-          );
-        })}
-      </div>
-
-      {/* Helper caption */}
-      <p className="mx-auto mt-6 max-w-7xl text-center font-ui text-[10px] uppercase tracking-[.35em] text-[#FFFAFA]/40">
-        SURVOLEZ UNE CARTE EN VERRE POUR L'ACTIVER // NEÏROUA EXPÉRIENCE
-      </p>
     </section>
   );
 };

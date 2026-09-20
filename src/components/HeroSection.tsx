@@ -83,7 +83,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   const imageScale = useTransform(scrollYProgress, [0, 0.8], [1.05, 1.15]);
   const heroOverlayOpacity = useTransform(scrollYProgress, [0, 0.65], [0.35, 0.65]);
   const textFadeOut = useTransform(scrollYProgress, [0, 0.4], [1, 0]);
-  const scrollPromptOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
+  const scrollPromptOpacity = useTransform(scrollYProgress, [0, 0.05], [1, 0]);
 
   const handleDiscover = () => {
     if (onScrollToEgo) {
@@ -139,7 +139,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 COLLECTION 01
               </span>
               <span className="hidden sm:inline font-ui text-[10px] uppercase tracking-[.3em] text-[#FFFAFA]/60">
-                ABIDJAN — PARIS — TOKYO
+                MADE IN ABIDJAN
               </span>
             </div>
 
@@ -176,22 +176,22 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
               className="max-w-4xl"
             >
-              {/* Brand Logo Symbol */}
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <span className="text-[#F6D110] text-xl">✦</span>
-                <span className="font-ui text-xs uppercase tracking-[.4em] text-[#F6D110] font-bold">
-                  {BRAND_INFO.slogan}
-                </span>
-                <span className="text-[#F6D110] text-xl">✦</span>
-              </div>
-
               {/* Massive Main Title */}
               <h1 className="font-display text-[clamp(4rem,14vw,12rem)] font-bold tracking-[-0.04em] leading-[0.82] text-[#FFFAFA] uppercase drop-shadow-[0_12px_40px_rgba(0,0,0,0.8)]">
                 NEÏROUA
               </h1>
 
+              {/* Brand Logo Symbol / Slogan Just Below Title */}
+              <div className="flex items-center justify-center gap-2 mt-4">
+                <span className="text-[#F6D110] text-lg">✦</span>
+                <span className="font-ui text-xs uppercase tracking-[.4em] text-[#F6D110] font-bold">
+                  {BRAND_INFO.slogan}
+                </span>
+                <span className="text-[#F6D110] text-lg">✦</span>
+              </div>
+
               {/* Subtitle */}
-              <p className="mt-6 mx-auto max-w-xl font-ui text-sm sm:text-base font-light tracking-[.12em] text-[#FFFAFA]/90 leading-relaxed drop-shadow-md">
+              <p className="mt-8 mx-auto max-w-xl font-ui text-sm sm:text-base font-light tracking-[.12em] text-[#FFFAFA]/90 leading-relaxed drop-shadow-md">
                 Une pièce pensée entre matière, mouvement et identité.
                 <br className="hidden sm:inline" />
                 <span className="text-[#FFFAFA]/70"> Le vêtement précède la marque.</span>
@@ -214,8 +214,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           {/* Bottom Coordinates & Scroll prompt */}
           <div className="absolute inset-x-6 bottom-8 sm:inset-x-12 z-20 flex items-end justify-between pointer-events-none">
             <div className="hidden sm:block font-ui text-[10px] uppercase tracking-[.3em] text-[#FFFAFA]/60">
-              <p className="text-[#F6D110] font-semibold">PATRIMOINE COLLECTIF</p>
-              <p>NÉE EN CÔTE D'IVOIRE</p>
+              <p className="text-[#F6D110] font-semibold">BABI NEXT GENERATION</p>
             </div>
 
             {/* Scroll Indicator */}

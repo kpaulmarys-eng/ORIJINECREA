@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { MarqueeBands } from './MarqueeBands';
 import { BRAND_INFO, BRAND_COLORS } from '../data/brandData';
+import { ScrollReveal } from './ScrollReveal';
 
 export const EgoManifesto: React.FC = () => {
   const containerVariants = {
@@ -106,9 +107,9 @@ export const EgoManifesto: React.FC = () => {
       </motion.div>
 
       {/* Reversed Bottom Marquee */}
-      <div className="mt-24">
+      <ScrollReveal yOffset={25} delay={0.1} duration={0.8} className="mt-24">
         <MarqueeBands reverse={true} />
-      </div>
+      </ScrollReveal>
     </section>
   );
 };

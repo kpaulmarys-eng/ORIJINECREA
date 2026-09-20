@@ -22,6 +22,8 @@ export interface GarmentProduct {
   arAvailable: boolean;
   videoDuration: string;
   sizes: string[];
+  colors?: string[];
+  themeColor?: string;
 }
 
 export interface ExperienceCardItem {

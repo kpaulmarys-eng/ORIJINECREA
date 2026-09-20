@@ -1,6 +1,7 @@
 import React from 'react';
 import { BRAND_INFO, BRAND_COLORS } from '../data/brandData';
 import { MapPin, Mail, Phone, ArrowUpRight } from 'lucide-react';
+import { ScrollReveal } from './ScrollReveal';
 
 interface FooterProps {
   onNavigateToCollection?: () => void;
@@ -27,7 +28,8 @@ export const Footer: React.FC<FooterProps> = ({
       data-testid="site-footer"
       className="border-t border-[#FFFAFA]/15 bg-[#141412] px-6 pb-12 pt-16 text-[#FFFAFA] sm:px-12 sm:pt-24"
     >
-      <div className="grid gap-12 border-b border-[#FFFAFA]/15 pb-16 lg:grid-cols-[1.5fr_1fr_1fr] max-w-7xl mx-auto">
+      <ScrollReveal yOffset={30} duration={0.85} className="max-w-7xl mx-auto">
+        <div className="grid gap-12 border-b border-[#FFFAFA]/15 pb-16 lg:grid-cols-[1.5fr_1fr_1fr]">
         {/* Brand Statement & Origin */}
         <div>
           <div className="flex items-center gap-2">
@@ -143,10 +145,11 @@ export const Footer: React.FC<FooterProps> = ({
       </div>
 
       {/* Bottom Legal Line */}
-      <div className="flex flex-col justify-between items-center gap-3 pt-8 font-ui text-[10px] uppercase tracking-[.25em] text-[#FFFAFA]/40 sm:flex-row max-w-7xl mx-auto">
+      <div className="flex flex-col justify-between items-center gap-3 pt-8 font-ui text-[10px] uppercase tracking-[.25em] text-[#FFFAFA]/40 sm:flex-row">
         <span>© {new Date().getFullYear()} NEÏROUA // PATRIMOINE COLLECTIF</span>
         <span>ABIDJAN — PARIS — TOKYO</span>
       </div>
+      </ScrollReveal>
     </footer>
   );
 };
