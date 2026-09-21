@@ -40,3 +40,30 @@ export interface CartItem {
   size: string;
   quantity: number;
 }
+
+export interface ActiveOrder {
+  orderNumber: string;
+  items: CartItem[];
+  total: number;
+  date: string;
+  estimatedDelivery: string;
+  createdAt?: number;
+}
+
+export interface PastOrder {
+  id: string;
+  orderNumber: string;
+  items: CartItem[];
+  total: number;
+  date: string;
+  deliveredAt: string;
+  status: 'delivered';
+}
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string;
+  joinedDate?: string;
+}

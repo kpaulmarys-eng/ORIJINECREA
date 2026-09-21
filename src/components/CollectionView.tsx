@@ -10,11 +10,13 @@ import {
   ChevronLeft,
   ChevronRight,
   Sparkles,
+  User,
 } from 'lucide-react';
 import { BlurUpImage } from './BlurUpImage';
 import { PRODUCTS, BRAND_INFO } from '../data/brandData';
-import { GarmentProduct } from '../types';
+import { GarmentProduct, UserProfile } from '../types';
 import { Footer } from './Footer';
+import { formatPrice } from '../utils/formatters';
 import officialLogo from '../assets/images/logo_official.png';
 import logoTextOfficial from '../assets/images/logo_text_official.png';
 
@@ -24,8 +26,11 @@ interface CollectionViewProps {
   onOpenAR: (product: GarmentProduct) => void;
   onOpenVideo: (product: GarmentProduct) => void;
   onNavigateToSection?: (sectionId: string) => void;
-  onOpenCart?: () => void;
+  onOpenCart?: (tab?: 'cart' | 'tracking') => void;
+  onOpenAccount?: () => void;
   cartCount?: number;
+  hasActiveOrder?: boolean;
+  user?: UserProfile | null;
 }
 
 export const CollectionView: React.FC<CollectionViewProps> = ({
@@ -35,7 +40,10 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
   onOpenVideo,
   onNavigateToSection,
   onOpenCart,
+  onOpenAccount,
   cartCount,
+  hasActiveOrder = false,
+  user = null,
 }) => {
   const [activeGender, setActiveGender] = useState<'homme' | 'femme' | 'tous'>('tous');
   const [activeIndex, setActiveIndex] = useState(0);
@@ -144,19 +152,50 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
           <img src={logoTextOfficial} alt="Logo NEÏROUA" className="h-8 sm:h-9 w-auto object-contain select-none" />
         </button>
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-3 sm:gap-6">
+          {hasActiveOrder && onOpenCart && (
+            <button
+              onClick={() => onOpenCart('tracking')}
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F6D110]/10 border border-[#F6D110]/40 text-[#F6D110] font-ui text-[10px] font-bold tracking-[0.2em] uppercase hover:bg-[#F6D110] hover:text-[#1F1F1C] transition-all cursor-pointer shadow-[0_0_10px_rgba(246,209,16,0.15)]"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#F6D110] animate-pulse" />
+              <span>SUIVI</span>
+            </button>
+          )}
+
+          {/* User Profile Button */}
+          {onOpenAccount && (
+            <button
+              type="button"
+              data-cursor="ACCOUNT"
+              onClick={onOpenAccount}
+              aria-label="Espace Compte NEÏROUA"
+              className="relative flex items-center justify-center p-1.5 rounded-full hover:bg-white/10 hover:text-[#F6D110] transition-colors cursor-pointer text-[#FFFAFA]"
+            >
+              {user ? (
+                <span className="w-6 h-6 rounded-full bg-[#10100E] border-2 border-[#F6D110] text-[#F6D110] font-display text-[11px] font-bold flex items-center justify-center shadow-[0_0_8px_rgba(246,209,16,0.25)]">
+                  {user.name.trim().charAt(0).toUpperCase()}
+                </span>
+              ) : (
+                <User size={16} strokeWidth={1.5} />
+              )}
+            </button>
+          )}
+
           {onOpenCart && (
             <button
-              onClick={onOpenCart}
-              className="relative flex items-center gap-2 font-ui text-[11px] uppercase tracking-[.25em] text-[#FFFAFA] hover:text-[#F6D110] transition-colors"
+              onClick={() => onOpenCart(hasActiveOrder && (cartCount ?? 0) === 0 ? 'tracking' : 'cart')}
+              className="relative flex items-center gap-2 font-ui text-[11px] uppercase tracking-[.25em] text-[#FFFAFA] hover:text-[#F6D110] transition-colors cursor-pointer"
             >
               <ShoppingBag size={14} />
               <span className="hidden sm:inline">PANIER</span>
-              {(cartCount ?? 0) > 0 && (
+              {(cartCount ?? 0) > 0 ? (
                 <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#F6D110] text-[9px] font-bold text-black">
                   {cartCount}
                 </span>
-              )}
+              ) : hasActiveOrder ? (
+                <span className="w-2 h-2 rounded-full bg-[#F6D110] shadow-[0_0_6px_#F6D110]" />
+              ) : null}
             </button>
           )}
 
@@ -318,7 +357,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
                           </h3>
                         </div>
                         <span className="font-display text-lg sm:text-xl font-bold text-white whitespace-nowrap pl-2">
-                          {product.price}{product.currency}
+                          {formatPrice(product.price)}
                         </span>
                       </div>
 
@@ -390,7 +429,7 @@ export const CollectionView: React.FC<CollectionViewProps> = ({
                           {isAdded ? (
                             <span className="flex items-center justify-center gap-2"><Check size={15} /> AJOUTÉ AU PANIER</span>
                           ) : (
-                            <span className="flex items-center justify-center gap-2"><ShoppingBag size={15} /> ACHETER // {product.price}{product.currency}</span>
+                            <span className="flex items-center justify-center gap-2"><ShoppingBag size={15} /> ACHETER // {formatPrice(product.price)}</span>
                           )}
                         </button>
                       </div>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronLeft, ChevronRight, Video, Box, Check, Sparkles } from 'lucide-react';
 import { GarmentProduct } from '../types';
+import { formatPrice } from '../utils/formatters';
 
 interface ProductCardProps {
   product: GarmentProduct;
@@ -58,7 +59,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         </div>
         <div className="text-right">
           <span className="text-xl sm:text-2xl font-mono font-bold text-[#D4FF00] tracking-tight">
-            {product.price} {product.currency}
+            {formatPrice(product.price)}
           </span>
         </div>
       </div>
@@ -202,7 +203,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           ) : (
             <>
               <span>ACHETER</span>
-              <span className="text-xs font-normal opacity-80">({product.price} {product.currency})</span>
+              <span className="text-xs font-normal opacity-80">({formatPrice(product.price)})</span>
             </>
           )}
         </button>

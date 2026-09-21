@@ -13,8 +13,6 @@ export const MarqueeBands: React.FC<MarqueeBandsProps> = ({ reverse = false }) =
     'NEÏROUA',
     '•',
     'COLLECTION 01',
-    '—',
-    'ABIDJAN — PARIS — TOKYO',
     '✦',
     'NEÏROUA',
     '//',
@@ -23,7 +21,7 @@ export const MarqueeBands: React.FC<MarqueeBandsProps> = ({ reverse = false }) =
   ];
 
   return (
-    <div className="overflow-hidden border-y border-[#FFFAFA]/15 bg-[#1F1F1C] py-3 text-[#FFFAFA]">
+    <div className="overflow-hidden border-y border-[#FFFAFA]/15 bg-[#1F1F1C] py-3 text-[#FFFAFA] m-0 my-0 mt-0 mb-0">
       <div
         className={`marquee-track ${
           reverse ? 'marquee-track-reverse' : ''

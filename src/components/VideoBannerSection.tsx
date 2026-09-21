@@ -3,7 +3,7 @@ import { ScrollReveal } from './ScrollReveal';
 
 export const VideoBannerSection: React.FC = () => {
   return (
-    <section className="relative w-full h-[60vh] sm:h-[80vh] bg-black overflow-hidden flex items-center justify-center">
+    <section className="relative w-full h-[60vh] sm:h-[80vh] bg-black overflow-hidden flex items-center justify-center m-0 my-0 mt-0 mb-0 p-0 py-0 pt-0 pb-0 border-0 leading-none">
       <video
         autoPlay
         loop

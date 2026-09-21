@@ -2,7 +2,6 @@ import React, { useRef, useState } from 'react';
 import { motion, useScroll, useTransform } from 'motion/react';
 import { ArrowDown, Volume2, VolumeX, Sparkles } from 'lucide-react';
 import heroImg from '../assets/images/hero_sculptural_piece_1789592524800.jpg';
-import { MarqueeBands } from './MarqueeBands';
 import { BRAND_INFO, BRAND_COLORS } from '../data/brandData';
 
 interface HeroSectionProps {
@@ -250,11 +249,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             </div>
           </div>
         </motion.div>
-      </div>
-
-      {/* Marquee Bands with NEÏROUA */}
-      <div className="relative z-20 -mt-2">
-        <MarqueeBands />
       </div>
     </section>
   );

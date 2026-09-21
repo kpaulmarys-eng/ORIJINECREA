@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ShoppingBag, Menu, X, ArrowUpRight, Sparkles } from 'lucide-react';
+import { ShoppingBag, Menu, X, ArrowUpRight, Sparkles, User } from 'lucide-react';
 import { BRAND_INFO, BRAND_COLORS } from '../data/brandData';
+import { UserProfile } from '../types';
 import officialLogo from '../assets/images/logo_official.png';
 import logoTextOfficial from '../assets/images/logo_text_official.png';
 
 interface NavbarProps {
   currentView: string;
   cartCount: number;
+  hasActiveOrder?: boolean;
+  user?: UserProfile | null;
   onNavigateHome: () => void;
   onNavigateToCollection: () => void;
-  onOpenCart: () => void;
+  onOpenCart: (tab?: 'cart' | 'tracking') => void;
+  onOpenAccount?: () => void;
   onNavigateToSection?: (sectionId: string) => void;
   isLogoRevealed?: boolean;
 }
@@ -18,9 +22,12 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({
   currentView,
   cartCount,
+  hasActiveOrder = false,
+  user = null,
   onNavigateHome,
   onNavigateToCollection,
   onOpenCart,
+  onOpenAccount,
   onNavigateToSection,
   isLogoRevealed = true,
 }) => {
@@ -133,20 +140,52 @@ export const Navbar: React.FC<NavbarProps> = ({
         </nav>
 
         {/* Header Right Actions */}
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-3 sm:gap-4">
+          {hasActiveOrder && (
+            <button
+              type="button"
+              onClick={() => onOpenCart('tracking')}
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F6D110]/10 border border-[#F6D110]/40 text-[#F6D110] font-ui text-[10px] font-bold tracking-[0.2em] uppercase hover:bg-[#F6D110] hover:text-[#1F1F1C] transition-all cursor-pointer shadow-[0_0_10px_rgba(246,209,16,0.15)]"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#F6D110] animate-pulse" />
+              <span>SUIVI COMMANDE</span>
+            </button>
+          )}
+
+          {/* User Profile Button */}
+          {onOpenAccount && (
+            <button
+              type="button"
+              data-cursor="ACCOUNT"
+              onClick={onOpenAccount}
+              aria-label="Espace Compte NEÏROUA"
+              className="relative flex items-center justify-center p-2 rounded-full hover:bg-white/10 hover:text-[#F6D110] transition-colors cursor-pointer text-[#FFFAFA]"
+            >
+              {user ? (
+                <span className="w-7 h-7 rounded-full bg-[#10100E] border-2 border-[#F6D110] text-[#F6D110] font-display text-xs font-bold flex items-center justify-center shadow-[0_0_10px_rgba(246,209,16,0.25)]">
+                  {user.name.trim().charAt(0).toUpperCase()}
+                </span>
+              ) : (
+                <User size={18} strokeWidth={1.5} />
+              )}
+            </button>
+          )}
+
           <button
             type="button"
             data-cursor="CART"
-            onClick={onOpenCart}
-            aria-label="Voir le panier"
+            onClick={() => onOpenCart(hasActiveOrder && cartCount === 0 ? 'tracking' : 'cart')}
+            aria-label="Voir le panier et le suivi"
             className="relative flex items-center justify-center p-2 rounded-full hover:bg-white/10 hover:text-[#F6D110] transition-colors cursor-pointer text-[#FFFAFA]"
           >
             <ShoppingBag size={18} strokeWidth={1.5} />
-            {cartCount > 0 && (
+            {cartCount > 0 ? (
               <span className="absolute -top-1 -right-1 bg-[#F6D110] text-[#1F1F1C] text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-md">
                 {cartCount}
               </span>
-            )}
+            ) : hasActiveOrder ? (
+              <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#F6D110] shadow-[0_0_8px_#F6D110]" />
+            ) : null}
           </button>
 
           {/* Mobile Menu Button */}
@@ -226,6 +265,61 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span>04. EXPÉRIENCES</span>
                 <ArrowUpRight size={22} className="text-[#F6D110]" />
               </button>
+
+              <div className="pt-4 border-t border-[#FFFAFA]/10 flex flex-col gap-3">
+                {onOpenAccount && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      onOpenAccount();
+                    }}
+                    className="w-full py-3 px-4 rounded-xl bg-[#1A1A17] border border-[#FFFAFA]/15 hover:border-[#F6D110]/50 text-left font-ui text-xs font-bold tracking-[0.2em] uppercase text-[#FFFAFA] flex items-center justify-between transition-colors cursor-pointer"
+                  >
+                    <span className="flex items-center gap-2.5">
+                      <User size={16} className="text-[#F6D110]" />
+                      <span>{user ? `COMPTE : ${user.name}` : 'ESPACE COMPTE / CONNEXION'}</span>
+                    </span>
+                    <span className="text-[#F6D110] text-[10px] font-bold">
+                      {user ? 'ACCÉDER' : 'SE CONNECTER'}
+                    </span>
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    onOpenCart('cart');
+                  }}
+                  className="w-full py-3 px-4 rounded-xl bg-[#1A1A17] border border-[#FFFAFA]/15 text-left font-ui text-xs font-bold tracking-[0.2em] uppercase text-[#FFFAFA] flex items-center justify-between"
+                >
+                  <span className="flex items-center gap-2">
+                    <ShoppingBag size={16} />
+                    <span>PANIER ({cartCount})</span>
+                  </span>
+                  <span className="text-[#F6D110]">OUVRIR</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    onOpenCart('tracking');
+                  }}
+                  className={`w-full py-3 px-4 rounded-xl border text-left font-ui text-xs font-bold tracking-[0.2em] uppercase flex items-center justify-between transition-colors ${
+                    hasActiveOrder
+                      ? 'bg-[#F6D110]/15 border-[#F6D110] text-[#F6D110]'
+                      : 'bg-[#1A1A17] border-[#FFFAFA]/15 text-[#FFFAFA]/70'
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <span className={`w-2 h-2 rounded-full ${hasActiveOrder ? 'bg-[#F6D110] animate-pulse' : 'bg-[#FFFAFA]/30'}`} />
+                    <span>SUIVI DE COMMANDE</span>
+                  </span>
+                  <span className="text-xs">{hasActiveOrder ? 'ACTIF' : 'ACCÉDER'}</span>
+                </button>
+              </div>
             </nav>
 
             {/* Bottom Mobile Footer */}

@@ -5,6 +5,7 @@ import { PRODUCTS } from '../data/brandData';
 import { BlurUpImage } from './BlurUpImage';
 import { GarmentProduct } from '../types';
 import { ScrollReveal } from './ScrollReveal';
+import { formatPrice } from '../utils/formatters';
 
 interface IconicPiecesSectionProps {
   onNavigateToCollection: () => void;
@@ -169,7 +170,7 @@ export const IconicPiecesSection: React.FC<IconicPiecesSectionProps> = ({
                       isHovered ? 'opacity-0' : 'opacity-100'
                     }`}
                   >
-                    {product.price} €
+                    {formatPrice(product.price)}
                   </div>
                 </div>
 
@@ -184,8 +185,8 @@ export const IconicPiecesSection: React.FC<IconicPiecesSectionProps> = ({
                     </h3>
                   </div>
                   <div className="text-right">
-                    <span className="font-ui text-2xl font-bold text-[#F6D110] leading-none block">
-                      {product.price} €
+                    <span className="font-ui text-xl sm:text-2xl font-bold text-[#F6D110] leading-none block">
+                      {formatPrice(product.price)}
                     </span>
                     <span className="font-ui text-[9px] uppercase tracking-wider text-[#FFFAFA]/40 block mt-0.5">
                       {isHovered ? 'TVA INCLUSE' : 'SURVOLER'}

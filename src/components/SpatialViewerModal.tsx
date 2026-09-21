@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, RotateCw, ZoomIn, ZoomOut, Compass, Sparkles, Layers, Eye } from 'lucide-react';
 import { PRODUCTS, HERO_ASSET } from '../data/brandData';
+import { formatPrice } from '../utils/formatters';
 
 interface SpatialViewerModalProps {
   isOpen: boolean;
@@ -153,7 +154,7 @@ export const SpatialViewerModal: React.FC<SpatialViewerModalProps> = ({
                       }`}
                     >
                       <div className="truncate font-bold">{prod.name}</div>
-                      <div className="text-[10px] text-[#F6D110]">{prod.price} €</div>
+                      <div className="text-[10px] text-[#F6D110]">{formatPrice(prod.price)}</div>
                     </button>
                   ))}
                 </div>
@@ -215,7 +216,7 @@ export const SpatialViewerModal: React.FC<SpatialViewerModalProps> = ({
                 }}
                 className="w-full py-3.5 bg-[#F6D110] hover:bg-[#ffd91a] text-[#1F1F1C] font-mono tracking-[0.2em] text-xs uppercase font-black transition-all shadow-xl text-center"
               >
-                ACQUÉRIR CETTE PIÈCE ({currentProduct.price} €)
+                ACQUÉRIR CETTE PIÈCE ({formatPrice(currentProduct.price)})
               </button>
             </div>
           </div>
